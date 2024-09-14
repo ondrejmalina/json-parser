@@ -7,15 +7,15 @@ import (
 	"os"
 )
 
-type TokenType int
+type TokenType string
 
 const (
-	EOF = iota // initator, starts at 0, adds 1 to each successive non-empty, non-comment line
-	INVALID
-	RIGHT_CUR_BR
-	LEFT_CUR_BR
-	LEFT_SQ_BR
-	RIGHT_SQ_BR
+	EOF          TokenType = "EOF"
+	INVALID                = "INVALID"
+	LEFT_CUR_BR            = "LEFT_CUR_BR"
+	RIGHT_CUR_BR           = "RIGHT_CUR_BR"
+	LEFT_SQ_BR             = "LEFT_SQ_BR"
+	RIGHT_SQ_BR            = "RIGHT_SQ_BR"
 )
 
 func Read() []byte {
@@ -46,6 +46,10 @@ type Lexer struct {
 
 func (l *Lexer) nextElement() {
 	l.position++
+	if l.position == len(l.str) {
+		return
+	}
+	l.character = l.str[l.position]
 }
 
 func (l *Lexer) matchToken() Token {
@@ -65,9 +69,8 @@ func (l *Lexer) matchToken() Token {
 
 func (l *Lexer) TokenizeString() []Token {
 	var tokens []Token
-	lenStr := len(l.str)
 
-	for i := 0; i < lenStr; i++ {
+	for l.position < len(l.str) {
 		token := l.matchToken()
 		tokens = append(tokens, token)
 		l.nextElement()
