@@ -5,10 +5,10 @@ type TokenType string
 const (
 	EOF          TokenType = "EOF"
 	INVALID                = "INVALID"
-	LEFT_CUR_BR            = "LEFT_CUR_BR"
-	RIGHT_CUR_BR           = "RIGHT_CUR_BR"
-	LEFT_SQ_BR             = "LEFT_SQ_BR"
-	RIGHT_SQ_BR            = "RIGHT_SQ_BR"
+	LEFT_CUR_BR            = "{"
+	RIGHT_CUR_BR           = "}"
+	LEFT_SQ_BR             = "["
+	RIGHT_SQ_BR            = "]"
 )
 
 type Token struct {
