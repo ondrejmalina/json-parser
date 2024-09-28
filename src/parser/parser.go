@@ -8,7 +8,8 @@ import (
 
 // Iterator interface
 type Iterator interface {
-	next() (interface{}, bool)
+	hasNext() bool
+	getNext() interface{}
 }
 
 type Collection interface {
@@ -32,24 +33,33 @@ type ParserIterator struct {
 	position   int
 }
 
-func (si *ParserIterator) next() (interface{}, bool) {
-	if si.position >= len(si.collection) {
-		return nil, false
-	}
+func (si *ParserIterator) getNext() interface{} {
+
+	currentToken := si.collection[si.position]
 	si.position++
-	return si.collection[si.position], true
+	return currentToken
+}
+
+func (si *ParserIterator) hasNext() bool {
+	if si.position >= len(si.collection) {
+		return false
+	}
+	return true
 }
 
 func (p *Parser) ParseJson() {
-	if err := p.parseToken(); err != nil {
+	if err := p.parseObject(); err != nil {
 		os.Exit(1)
 	}
 	os.Exit(0)
 }
 
-func (p *Parser) parseToken() error {
+func (p *Parser) parseObject() error {
 	// obj := make(map[string]interface{})
 
 	return errors.New("Error")
+}
+
+func (p *Parser) parseValue() {
 
 }
