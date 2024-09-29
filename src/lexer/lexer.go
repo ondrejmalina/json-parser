@@ -13,7 +13,6 @@ const (
 
 type Token struct {
 	Token    TokenType
-	Value    interface{}
 	Position int
 }
 
@@ -34,15 +33,15 @@ func (l *Lexer) nextElement() {
 func (l *Lexer) matchToken() Token {
 	switch string(l.Character) {
 	case "{":
-		return Token{LEFT_CUR_BR, l.String[l.Position], l.Position}
+		return Token{LEFT_CUR_BR, l.Position}
 	case "}":
-		return Token{RIGHT_CUR_BR, l.String[l.Position], l.Position}
+		return Token{RIGHT_CUR_BR, l.Position}
 	case "[":
-		return Token{LEFT_SQ_BR, l.String[l.Position], l.Position}
+		return Token{LEFT_SQ_BR, l.Position}
 	case "]":
-		return Token{RIGHT_SQ_BR, l.String[l.Position], l.Position}
+		return Token{RIGHT_SQ_BR, l.Position}
 	default:
-		return Token{INVALID, nil, len(l.String)}
+		return Token{INVALID, len(l.String)}
 	}
 }
 
