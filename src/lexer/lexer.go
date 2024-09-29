@@ -12,9 +12,9 @@ const (
 )
 
 type Token struct {
-	token    TokenType
-	value    interface{}
-	position int
+	Token    TokenType
+	Value    interface{}
+	Position int
 }
 
 type Lexer struct {

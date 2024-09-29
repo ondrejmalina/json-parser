@@ -1,65 +1,42 @@
 package parser
 
 import (
-	"errors"
-	"github.com/ondrejmalina/json-parser/src/lexer"
 	"os"
+
+	"github.com/ondrejmalina/json-parser/src/lexer"
 )
 
-// Iterator interface
-type Iterator interface {
-	hasNext() bool
-	getNext() interface{}
+func CreateParser(tokens []lexer.Token) parser {
+	return parser{tokens: tokens, position: 0}
 }
 
-type Collection interface {
-	CreateIterator() Iterator
+type parser struct {
+	tokens   []lexer.Token
+	position int
 }
 
-// Parse Iterator
-type Parser struct {
-	Tokens []lexer.Token
+func (p *parser) getNextToken() lexer.Token {
+	p.position++
+	return p.tokens[p.position]
 }
 
-func (p *Parser) CreateIterator() Iterator {
-	return &ParserIterator{
-		collection: p.Tokens,
-		position:   0,
+func (p *parser) ParseJson() {
+	p.parseValue()
+}
+
+func (p *parser) parseObject() {
+	token := p.getNextToken()
+	for true {
+		if token.Token == "}" {
+			os.Exit(0)
+		}
 	}
+	os.Exit(1)
 }
 
-type ParserIterator struct {
-	collection []lexer.Token
-	position   int
-}
-
-func (si *ParserIterator) getNext() interface{} {
-
-	currentToken := si.collection[si.position]
-	si.position++
-	return currentToken
-}
-
-func (si *ParserIterator) hasNext() bool {
-	if si.position >= len(si.collection) {
-		return false
+func (p *parser) parseValue() {
+	switch p.tokens[p.position].Token {
+	case "{":
+		p.parseObject()
 	}
-	return true
-}
-
-func (p *Parser) ParseJson() {
-	if err := p.parseObject(); err != nil {
-		os.Exit(1)
-	}
-	os.Exit(0)
-}
-
-func (p *Parser) parseObject() error {
-	// obj := make(map[string]interface{})
-
-	return errors.New("Error")
-}
-
-func (p *Parser) parseValue() {
-
 }
