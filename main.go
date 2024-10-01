@@ -14,6 +14,7 @@ func main() {
 
 	file := string(file.Read())
 	lexer := lexer.Lexer{String: file, Character: file[0], Position: 0}
+	fmt.Println(lexer)
 	tokens := lexer.TokenizeString()
 	fmt.Println(tokens)
 

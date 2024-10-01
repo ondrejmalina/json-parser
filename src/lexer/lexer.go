@@ -41,7 +41,7 @@ func (l *Lexer) matchToken() Token {
 	case "]":
 		return Token{RIGHT_SQ_BR, l.Position}
 	default:
-		return Token{INVALID, len(l.String)}
+		return Token{INVALID, l.Position}
 	}
 }
 
