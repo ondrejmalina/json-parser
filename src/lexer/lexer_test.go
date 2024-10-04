@@ -8,7 +8,7 @@ func TestMatchToken(t *testing.T) {
 
 	testString := "{}a[]"
 	expectedOutput := []Token{
-		{LEFT_CUR_BR, 0}, // type must be not specified, it is inferred
+		{LEFT_CUR_BR, 0},
 		{RIGHT_CUR_BR, 1},
 		{INVALID, 2},
 		{LEFT_SQ_BR, 3},
@@ -28,5 +28,30 @@ func TestMatchToken(t *testing.T) {
 				expectedOutput[l.Position])
 		}
 		l.nextElement()
+	}
+}
+
+func TestTokenizeString(t *testing.T) {
+
+	testString := "{[1],}"
+	expectedOutput := []Token{
+		{LEFT_CUR_BR, 0},
+		{LEFT_SQ_BR, 1},
+		{INVALID, 2},
+		{RIGHT_SQ_BR, 3},
+		{INVALID, 4},
+		{RIGHT_CUR_BR, 5},
+	}
+	l := Lexer{testString, testString[0], 0}
+
+	tokens := l.TokenizeString()
+
+	for token := range tokens {
+		if tokens[token] != expectedOutput[token] {
+			t.Errorf("\nToken %v does not match expected token %v",
+				tokens[token],
+				expectedOutput[token],
+			)
+		}
 	}
 }
