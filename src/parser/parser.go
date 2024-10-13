@@ -37,6 +37,8 @@ func (p *parser) parseValue() error {
 	err = nil
 
 	switch p.tokens[p.position].Token {
+	case "EMPTY":
+		err = errors.New("Empty file is not valid JSON")
 	case "{":
 		err = p.parseObject()
 	}
