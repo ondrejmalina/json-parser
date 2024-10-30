@@ -6,10 +6,13 @@ const (
 	EOF          TokenType = "EOF"
 	EMPTY                  = "EMPTY"
 	INVALID                = "INVALID"
+	STRING                 = "STRING"
 	LEFT_CUR_BR            = "{"
 	RIGHT_CUR_BR           = "}"
 	LEFT_SQ_BR             = "["
 	RIGHT_SQ_BR            = "]"
+	COLON                  = ":"
+	COMMA                  = ","
 )
 
 type Token struct {
@@ -39,9 +42,27 @@ func (l *Lexer) matchToken() Token {
 		return Token{LEFT_SQ_BR, l.Position}
 	case "]":
 		return Token{RIGHT_SQ_BR, l.Position}
+	case ",":
+		return Token{COMMA, l.Position}
+	case ":":
+		return Token{COLON, l.Position}
+	case `"`:
+		return l.parseString()
 	default:
 		return Token{INVALID, l.Position}
 	}
+}
+
+func (l *Lexer) parseString() Token {
+	startingPosition := l.Position
+	for l.nextElement(); string(l.String[l.Position]) != `"`; {
+		l.nextElement()
+		if l.Position == len(l.String) {
+			return Token{INVALID, startingPosition}
+		}
+	}
+
+	return Token{STRING, startingPosition}
 }
 
 func (l *Lexer) TokenizeString() []Token {

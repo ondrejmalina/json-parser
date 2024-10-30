@@ -48,10 +48,8 @@ func (p *parser) parseValue() error {
 
 func (p *parser) parseObject() error {
 	token := p.getNextToken()
-	for true {
-		if token.Token == "}" {
-			return nil
-		}
+	if token.Token == "}" {
+		return nil
 	}
 	return errors.New("JSON is not valid")
 }

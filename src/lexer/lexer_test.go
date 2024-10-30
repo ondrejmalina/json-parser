@@ -33,14 +33,15 @@ func TestMatchToken(t *testing.T) {
 
 func TestTokenizeString(t *testing.T) {
 
-	testString := "{[1],}"
+	testString := `{[1],}$`
 	expectedOutput := []Token{
 		{LEFT_CUR_BR, 0},
 		{LEFT_SQ_BR, 1},
 		{INVALID, 2},
 		{RIGHT_SQ_BR, 3},
-		{INVALID, 4},
+		{COMMA, 4},
 		{RIGHT_CUR_BR, 5},
+		{INVALID, 6},
 	}
 
 	l := Lexer{testString, 0}
@@ -69,6 +70,45 @@ func TestTokenizeEmptyString(t *testing.T) {
 	for token := range tokens {
 		if tokens[token] != expectedOutput[token] {
 			t.Errorf("\nToken %v does not match expected token %v",
+				tokens[token],
+				expectedOutput[token],
+			)
+		}
+	}
+
+}
+
+func TestParseString(t *testing.T) {
+	// TODO: Refactor the test
+	testStringValid := `{"STR"}`
+	expectedOutput := []Token{
+		{LEFT_CUR_BR, 0},
+		{STRING, 1},
+		{RIGHT_CUR_BR, 6},
+	}
+
+	l := Lexer{testStringValid, 0}
+	tokens := l.TokenizeString()
+	for token := range tokens {
+		if tokens[token] != expectedOutput[token] {
+			t.Errorf("\nToken %v does not match expected token in valid string %v",
+				tokens[token],
+				expectedOutput[token],
+			)
+		}
+	}
+
+	testStringInvalid := `{"STR`
+	expectedOutputInvalid := []Token{
+		{LEFT_CUR_BR, 0},
+		{INVALID, 1},
+	}
+
+	l = Lexer{testStringInvalid, 0}
+	tokens = l.TokenizeString()
+	for token := range tokens {
+		if tokens[token] != expectedOutputInvalid[token] {
+			t.Errorf("\nToken %v does not match expected token in invalid string %v",
 				tokens[token],
 				expectedOutput[token],
 			)
