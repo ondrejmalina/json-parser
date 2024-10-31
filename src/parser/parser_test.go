@@ -23,7 +23,11 @@ func TestParser(t *testing.T) {
 	testFiles := []testFile{
 		{fmt.Sprintf("%v/testdata/step1/valid.json", cdir), true},
 		{fmt.Sprintf("%v/testdata/step1/invalid.json", cdir), false},
+		{fmt.Sprintf("%v/testdata/step2/valid.json", cdir), true},
+		{fmt.Sprintf("%v/testdata/step2/valid2.json", cdir), true},
 		{fmt.Sprintf("%v/testdata/step2/valid3.json", cdir), true},
+		{fmt.Sprintf("%v/testdata/step2/invalid.json", cdir), false},
+		{fmt.Sprintf("%v/testdata/step2/invalid2.json", cdir), false},
 	}
 
 	for _, testFile := range testFiles {
@@ -35,7 +39,6 @@ func TestParser(t *testing.T) {
 
 		lex := lexer.Lexer{String: string(file), Position: 0}
 		tok := lex.TokenizeString()
-		fmt.Print(tok)
 
 		par := CreateParser(tok)
 		err = par.parseValue()
@@ -43,11 +46,11 @@ func TestParser(t *testing.T) {
 		switch err {
 		case nil:
 			if testFile.valid == false {
-				t.Errorf("Invalid file %v parsed as valid", testFile.testFile)
+				t.Errorf("Invalid file %v parsed as valid, \nerror: %v", testFile.testFile, err)
 			}
 		default:
 			if testFile.valid == true {
-				t.Errorf("Valid file %v parsed as invalid", testFile.testFile)
+				t.Errorf("Valid file %v parsed as invalid, \nerror: %v", testFile.testFile, err)
 			}
 		}
 	}

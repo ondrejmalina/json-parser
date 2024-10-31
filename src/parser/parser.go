@@ -47,33 +47,35 @@ func (p *parser) parseValue() error {
 }
 
 func (p *parser) parseObject() error {
-	token := p.getNextToken()
+
 	// empty json files
-	if token.Token == "}" {
+	if p.tokens[p.position+1].Token == "}" {
 		return nil
 	}
 
+	var token lexer.Token
 	for true {
+		token = p.getNextToken()
 		if token.Token != "STRING" {
 			return errors.New("JSON key must be a string")
 		}
-		p.getNextToken()
 
+		token = p.getNextToken()
 		if token.Token != ":" {
-			return errors.New("JSON key must be followed by a comma")
+			return errors.New("JSON key must be followed by a colon")
 		}
-		p.getNextToken()
 
+		token = p.getNextToken()
 		if token.Token != "STRING" {
 			return errors.New("JSON value must be a string")
 		}
-		p.getNextToken()
 
+		token = p.getNextToken()
 		if token.Token == "}" {
 			return nil
 		}
 
-		if token.Token != "COMMA" {
+		if token.Token != "," {
 			return errors.New("Missing comma")
 		}
 	}

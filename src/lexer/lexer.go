@@ -7,6 +7,7 @@ const (
 	EMPTY                  = "EMPTY"
 	INVALID                = "INVALID"
 	STRING                 = "STRING"
+	HIDDEN                 = "HIDDEN"
 	LEFT_CUR_BR            = "{"
 	RIGHT_CUR_BR           = "}"
 	LEFT_SQ_BR             = "["
@@ -46,6 +47,12 @@ func (l *Lexer) matchToken() Token {
 		return Token{COMMA, l.Position}
 	case ":":
 		return Token{COLON, l.Position}
+	case "\n":
+		return Token{HIDDEN, l.Position}
+	case " ":
+		return Token{HIDDEN, l.Position}
+	case "\t":
+		return Token{HIDDEN, l.Position}
 	case `"`:
 		return l.parseString()
 	default:
@@ -54,6 +61,7 @@ func (l *Lexer) matchToken() Token {
 }
 
 func (l *Lexer) parseString() Token {
+	// TODO: Using twice l.nextElement() seems strange, fix it
 	startingPosition := l.Position
 	for l.nextElement(); string(l.String[l.Position]) != `"`; {
 		l.nextElement()
@@ -76,7 +84,9 @@ func (l *Lexer) TokenizeString() []Token {
 
 	for l.Position < len(l.String) {
 		token := l.matchToken()
-		tokens = append(tokens, token)
+		if token.Token != HIDDEN {
+			tokens = append(tokens, token)
+		}
 		l.nextElement()
 	}
 
