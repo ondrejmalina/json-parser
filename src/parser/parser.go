@@ -48,8 +48,35 @@ func (p *parser) parseValue() error {
 
 func (p *parser) parseObject() error {
 	token := p.getNextToken()
+	// empty json files
 	if token.Token == "}" {
 		return nil
 	}
+
+	for true {
+		if token.Token != "STRING" {
+			return errors.New("JSON key must be a string")
+		}
+		p.getNextToken()
+
+		if token.Token != ":" {
+			return errors.New("JSON key must be followed by a comma")
+		}
+		p.getNextToken()
+
+		if token.Token != "STRING" {
+			return errors.New("JSON value must be a string")
+		}
+		p.getNextToken()
+
+		if token.Token == "}" {
+			return nil
+		}
+
+		if token.Token != "COMMA" {
+			return errors.New("Missing comma")
+		}
+	}
+
 	return errors.New("JSON is not valid")
 }

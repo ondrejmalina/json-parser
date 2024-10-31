@@ -23,6 +23,7 @@ func TestParser(t *testing.T) {
 	testFiles := []testFile{
 		{fmt.Sprintf("%v/testdata/step1/valid.json", cdir), true},
 		{fmt.Sprintf("%v/testdata/step1/invalid.json", cdir), false},
+		{fmt.Sprintf("%v/testdata/step2/valid3.json", cdir), true},
 	}
 
 	for _, testFile := range testFiles {
@@ -34,6 +35,7 @@ func TestParser(t *testing.T) {
 
 		lex := lexer.Lexer{String: string(file), Position: 0}
 		tok := lex.TokenizeString()
+		fmt.Print(tok)
 
 		par := CreateParser(tok)
 		err = par.parseValue()
