@@ -6,7 +6,7 @@ import (
 
 func TestMatchToken(t *testing.T) {
 
-	testString := "{}a[]"
+	testString := []rune("{}a[]")
 	expectedOutput := []Token{
 		{LEFT_CUR_BR, 0},
 		{RIGHT_CUR_BR, 1},
@@ -16,13 +16,13 @@ func TestMatchToken(t *testing.T) {
 	}
 	l := Lexer{testString, 0}
 
-	for l.Position < len(l.String) {
+	for l.Position < len(l.Runes) {
 		token := l.matchToken()
 		if token != expectedOutput[token.Position] {
 			t.Errorf("\nThe input string: %v, position: %v \n"+
 				"matches token %v which \n"+
 				"does not match expected output %v\n",
-				string(l.String[l.Position]),
+				string(l.Runes[l.Position]),
 				l.Position,
 				token,
 				expectedOutput[l.Position])
@@ -33,7 +33,7 @@ func TestMatchToken(t *testing.T) {
 
 func TestTokenizeString(t *testing.T) {
 
-	testString := `{[1],}$`
+	testString := []rune("{[1],}$")
 	expectedOutput := []Token{
 		{LEFT_CUR_BR, 0},
 		{LEFT_SQ_BR, 1},
@@ -59,7 +59,7 @@ func TestTokenizeString(t *testing.T) {
 
 func TestTokenizeEmptyString(t *testing.T) {
 
-	testString := ""
+	testString := []rune("")
 	expectedOutput := []Token{
 		{EMPTY, 0},
 	}
@@ -80,7 +80,7 @@ func TestTokenizeEmptyString(t *testing.T) {
 
 func TestParseString(t *testing.T) {
 	// TODO: Refactor the test
-	testStringValid := `{"STR"}`
+	testStringValid := []rune(`{"STR"}`)
 	expectedOutput := []Token{
 		{LEFT_CUR_BR, 0},
 		{STRING, 1},
@@ -98,7 +98,7 @@ func TestParseString(t *testing.T) {
 		}
 	}
 
-	testStringInvalid := `{"STR`
+	testStringInvalid := []rune(`{"STR`)
 	expectedOutputInvalid := []Token{
 		{LEFT_CUR_BR, 0},
 		{INVALID, 1},

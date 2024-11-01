@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func Read() []byte {
+func Read() []rune {
 	file := flag.Args()
 	if len(file) == 0 {
 		log.Fatal("No file input")
@@ -17,5 +17,5 @@ func Read() []byte {
 		log.Fatal(err)
 	}
 
-	return text
+	return []rune(string(text))
 }

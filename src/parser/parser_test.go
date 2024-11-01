@@ -37,7 +37,7 @@ func TestParser(t *testing.T) {
 			t.Errorf("Failed to read the test file")
 		}
 
-		lex := lexer.Lexer{String: string(file), Position: 0}
+		lex := lexer.Lexer{Runes: []rune(string(file)), Position: 0}
 		tok := lex.TokenizeString()
 
 		par := CreateParser(tok)

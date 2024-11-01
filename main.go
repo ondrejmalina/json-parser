@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
 	"github.com/ondrejmalina/json-parser/src/file"
 	"github.com/ondrejmalina/json-parser/src/lexer"
@@ -12,11 +11,9 @@ import (
 func main() {
 	flag.Parse()
 
-	file := string(file.Read())
-	lexer := lexer.Lexer{String: file, Position: 0}
-	fmt.Println(lexer)
+	file := file.Read()
+	lexer := lexer.Lexer{Runes: file, Position: 0}
 	tokens := lexer.TokenizeString()
-	fmt.Println(tokens)
 
 	p := parser.CreateParser(tokens)
 	p.ParseJson()

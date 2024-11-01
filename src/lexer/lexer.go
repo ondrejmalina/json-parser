@@ -22,38 +22,34 @@ type Token struct {
 }
 
 type Lexer struct {
-	String   string
+	Runes    []rune
 	Position int
 }
 
 func (l *Lexer) nextElement() {
 	l.Position++
-	if l.Position == len(l.String) {
+	if l.Position == len(l.Runes) {
 		return
 	}
 }
 
 func (l *Lexer) matchToken() Token {
-	switch string(l.String[l.Position]) {
-	case "{":
+	switch l.Runes[l.Position] {
+	case '{':
 		return Token{LEFT_CUR_BR, l.Position}
-	case "}":
+	case '}':
 		return Token{RIGHT_CUR_BR, l.Position}
-	case "[":
+	case '[':
 		return Token{LEFT_SQ_BR, l.Position}
-	case "]":
+	case ']':
 		return Token{RIGHT_SQ_BR, l.Position}
-	case ",":
+	case ',':
 		return Token{COMMA, l.Position}
-	case ":":
+	case ':':
 		return Token{COLON, l.Position}
-	case "\n":
+	case '\n', ' ', '\t':
 		return Token{HIDDEN, l.Position}
-	case " ":
-		return Token{HIDDEN, l.Position}
-	case "\t":
-		return Token{HIDDEN, l.Position}
-	case `"`:
+	case '"':
 		return l.parseString()
 	default:
 		return Token{INVALID, l.Position}
@@ -61,11 +57,11 @@ func (l *Lexer) matchToken() Token {
 }
 
 func (l *Lexer) parseString() Token {
-	// TODO: Using twice l.nextElement() seems strange, fix it
+	// TODO: How to deal with empty strings?
 	startingPosition := l.Position
-	for l.nextElement(); string(l.String[l.Position]) != `"`; {
+	for l.nextElement(); string(l.Runes[l.Position]) != `"`; {
 		l.nextElement()
-		if l.Position == len(l.String) {
+		if l.Position == len(l.Runes) {
 			return Token{INVALID, startingPosition}
 		}
 	}
@@ -76,13 +72,13 @@ func (l *Lexer) parseString() Token {
 func (l *Lexer) TokenizeString() []Token {
 	var tokens []Token
 
-	if len(l.String) == 0 {
+	if len(l.Runes) == 0 {
 		token := Token{EMPTY, 0}
 		tokens = append(tokens, token)
 		return tokens
 	}
 
-	for l.Position < len(l.String) {
+	for l.Position < len(l.Runes) {
 		token := l.matchToken()
 		if token.Token != HIDDEN {
 			tokens = append(tokens, token)
