@@ -1,5 +1,7 @@
 package lexer
 
+import "unicode"
+
 type TokenType string
 
 const (
@@ -34,22 +36,23 @@ func (l *Lexer) nextElement() {
 }
 
 func (l *Lexer) matchToken() Token {
-	switch l.Runes[l.Position] {
-	case '{':
+	rune := l.Runes[l.Position]
+	switch {
+	case rune == '{':
 		return Token{LEFT_CUR_BR, l.Position}
-	case '}':
+	case rune == '}':
 		return Token{RIGHT_CUR_BR, l.Position}
-	case '[':
+	case rune == '[':
 		return Token{LEFT_SQ_BR, l.Position}
-	case ']':
+	case rune == ']':
 		return Token{RIGHT_SQ_BR, l.Position}
-	case ',':
+	case rune == ',':
 		return Token{COMMA, l.Position}
-	case ':':
+	case rune == ':':
 		return Token{COLON, l.Position}
-	case '\n', ' ', '\t':
+	case unicode.IsSpace(rune) == true:
 		return Token{HIDDEN, l.Position}
-	case '"':
+	case rune == '"':
 		return l.parseString()
 	default:
 		return Token{INVALID, l.Position}
