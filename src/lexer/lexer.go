@@ -9,6 +9,7 @@ const (
 	EMPTY                  = "EMPTY"
 	INVALID                = "INVALID"
 	STRING                 = "STRING"
+	DIGIT                  = "DIGIT"
 	HIDDEN                 = "HIDDEN"
 	LEFT_CUR_BR            = "{"
 	RIGHT_CUR_BR           = "}"
@@ -70,6 +71,18 @@ func (l *Lexer) parseString() Token {
 	}
 
 	return Token{STRING, startingPosition}
+}
+
+func (l *Lexer) parseDigit() Token {
+	startingPosition := l.Position
+	for unicode.IsDigit(l.Runes[l.Position]) {
+		if l.Position == len(l.Runes)-1 {
+			return Token{DIGIT, startingPosition}
+		}
+		l.nextElement()
+	}
+
+	return Token{DIGIT, startingPosition}
 }
 
 func (l *Lexer) TokenizeString() []Token {
