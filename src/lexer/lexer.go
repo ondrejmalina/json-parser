@@ -65,7 +65,7 @@ func (l *Lexer) matchToken() Token {
 func (l *Lexer) parseString() Token {
 	// TODO: How to deal with empty strings?
 	startingPosition := l.Position
-	for l.nextElement(); string(l.Runes[l.Position]) != `"`; {
+	for l.nextElement(); l.Runes[l.Position] != '"'; {
 		l.nextElement()
 		if l.Position == len(l.Runes) {
 			return Token{INVALID, startingPosition}
