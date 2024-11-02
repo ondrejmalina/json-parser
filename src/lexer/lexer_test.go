@@ -37,7 +37,7 @@ func TestTokenizeString(t *testing.T) {
 	expectedOutput := []Token{
 		{LEFT_CUR_BR, 0},
 		{LEFT_SQ_BR, 1},
-		{INVALID, 2},
+		{DIGIT, 2},
 		{RIGHT_SQ_BR, 3},
 		{COMMA, 4},
 		{RIGHT_CUR_BR, 5},

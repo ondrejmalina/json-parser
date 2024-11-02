@@ -53,6 +53,8 @@ func (l *Lexer) matchToken() Token {
 		return Token{COLON, l.Position}
 	case unicode.IsSpace(rune) == true:
 		return Token{HIDDEN, l.Position}
+	case unicode.IsDigit(rune) == true:
+		return l.parseDigit()
 	case rune == '"':
 		return l.parseString()
 	default:
@@ -96,11 +98,17 @@ func (l *Lexer) TokenizeString() []Token {
 
 	for l.Position < len(l.Runes) {
 		token := l.matchToken()
-		if token.Token != HIDDEN {
+		switch {
+		// TODO: Using nextElement differently for digits
+		// is ugly, improve
+		case token.Token == HIDDEN:
+			l.nextElement()
+		case token.Token == DIGIT:
 			tokens = append(tokens, token)
+		default:
+			tokens = append(tokens, token)
+			l.nextElement()
 		}
-		l.nextElement()
 	}
-
 	return tokens
 }
