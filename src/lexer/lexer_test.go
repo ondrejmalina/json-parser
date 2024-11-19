@@ -116,3 +116,58 @@ func TestParseString(t *testing.T) {
 	}
 
 }
+
+func TestInteger(t *testing.T) {
+	testStringValid := []rune(`{123}`)
+	expectedOutput := []Token{
+		{LEFT_CUR_BR, 0},
+		{DIGIT, 1},
+		{RIGHT_CUR_BR, 4},
+	}
+
+	l := Lexer{testStringValid, 0}
+	tokens := l.TokenizeString()
+	for token := range tokens {
+		if tokens[token] != expectedOutput[token] {
+			t.Errorf("\nToken %v does not match expected token in valid string %v",
+				tokens[token],
+				expectedOutput[token],
+			)
+		}
+	}
+}
+
+func TestNull(t *testing.T) {
+	testStringValid := []rune(`null}`)
+	testStringInvalid := []rune(`{nul`)
+	expectedOutputValid := []Token{
+		{NULL, 0},
+		{RIGHT_CUR_BR, 5},
+	}
+	expectedOutputInvalid := []Token{
+		{LEFT_CUR_BR, 0},
+		{INVALID, 1},
+	}
+
+	l := Lexer{testStringValid, 0}
+	tokens := l.TokenizeString()
+	for token := range tokens {
+		if tokens[token] != expectedOutputValid[token] {
+			t.Errorf("\nToken %v does not match expected token in valid string %v",
+				tokens[token],
+				expectedOutputValid[token],
+			)
+		}
+	}
+
+	l = Lexer{testStringInvalid, 0}
+	tokens = l.TokenizeString()
+	for token := range tokens {
+		if tokens[token] != expectedOutputInvalid[token] {
+			t.Errorf("\nToken %v does not match expected token in valid string %v",
+				tokens[token],
+				expectedOutputInvalid[token],
+			)
+		}
+	}
+}

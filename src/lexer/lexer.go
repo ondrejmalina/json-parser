@@ -1,6 +1,8 @@
 package lexer
 
-import "unicode"
+import (
+	"unicode"
+)
 
 type TokenType string
 
@@ -11,6 +13,8 @@ const (
 	STRING                 = "STRING"
 	DIGIT                  = "DIGIT"
 	HIDDEN                 = "HIDDEN"
+	NULL                   = "NULL"
+	BOOL                   = "BOOL"
 	LEFT_CUR_BR            = "{"
 	RIGHT_CUR_BR           = "}"
 	LEFT_SQ_BR             = "["
@@ -53,13 +57,35 @@ func (l *Lexer) matchToken() Token {
 		return Token{COLON, l.Position}
 	case unicode.IsSpace(rune) == true:
 		return Token{HIDDEN, l.Position}
+	// TODO: Add support for negative numbers
 	case unicode.IsDigit(rune) == true:
 		return l.parseDigit()
 	case rune == '"':
 		return l.parseString()
+	case rune == 'n':
+		return l.parseNull()
 	default:
 		return Token{INVALID, l.Position}
 	}
+}
+
+func (l *Lexer) parseNull() Token {
+	startingPosition := l.Position
+	collected_string := ""
+
+	for i := 0; i < 4; i++ {
+		if l.Position == len(l.Runes) {
+			return Token{INVALID, startingPosition}
+		}
+		collected_string = collected_string + string(l.Runes[l.Position])
+		l.nextElement()
+	}
+
+	if collected_string == "null" {
+		return Token{NULL, startingPosition}
+	}
+
+	return Token{INVALID, startingPosition}
 }
 
 func (l *Lexer) parseString() Token {
