@@ -2,6 +2,8 @@ package lexer
 
 import (
 	"unicode"
+
+	"golang.org/x/text/unicode/rangetable"
 )
 
 type TokenType string
@@ -41,6 +43,9 @@ func (l *Lexer) nextElement() {
 }
 
 func (l *Lexer) matchToken() Token {
+
+	special_runes := rangetable.New('n', 't', 'f')
+
 	rune := l.Runes[l.Position]
 	switch {
 	case rune == '{':
@@ -62,18 +67,33 @@ func (l *Lexer) matchToken() Token {
 		return l.parseDigit()
 	case rune == '"':
 		return l.parseString()
-	case rune == 'n':
-		return l.parseNull()
+	case unicode.In(rune, special_runes) == true:
+		return l.parseSpecialFactory()
 	default:
 		return Token{INVALID, l.Position}
 	}
 }
 
-func (l *Lexer) parseNull() Token {
+func (l *Lexer) parseSpecialFactory() Token {
+	switch l.Runes[l.Position] {
+	case 'n':
+		return l.parseSpecial("null", 4, Token{NULL, l.Position})
+	case 't':
+		return l.parseSpecial("true", 4, Token{BOOL, l.Position})
+	case 'f':
+		return l.parseSpecial("false", 5, Token{BOOL, l.Position})
+	}
+	return Token{INVALID, l.Position}
+}
+
+func (l *Lexer) parseSpecial(exp_string string, len_exp_string int, return_token Token) Token {
+	// TODO: Where to set position if token is invalid?
+	// I think lexer should stop completely and let the parser fail
+	// Lexer must be part of parser
 	startingPosition := l.Position
 	collected_string := ""
 
-	for i := 0; i < 4; i++ {
+	for i := 0; i < len_exp_string; i++ {
 		if l.Position == len(l.Runes) {
 			return Token{INVALID, startingPosition}
 		}
@@ -81,8 +101,8 @@ func (l *Lexer) parseNull() Token {
 		l.nextElement()
 	}
 
-	if collected_string == "null" {
-		return Token{NULL, startingPosition}
+	if collected_string == exp_string {
+		return return_token
 	}
 
 	return Token{INVALID, startingPosition}
@@ -114,6 +134,10 @@ func (l *Lexer) parseDigit() Token {
 }
 
 func (l *Lexer) TokenizeString() []Token {
+	// NOTE: Where to add condition to return error
+	// if list of tokens has INVALID token?
+	// so far parser does it
+
 	var tokens []Token
 
 	if len(l.Runes) == 0 {
@@ -125,11 +149,18 @@ func (l *Lexer) TokenizeString() []Token {
 	for l.Position < len(l.Runes) {
 		token := l.matchToken()
 		switch {
-		// TODO: Using nextElement differently for digits
-		// is ugly, improve
+		case token.Token == INVALID:
+			tokens = append(tokens, token)
+			return tokens
+		// TODO: Using nextElement differently for digits,
+		// bool and null is ugly, improve
 		case token.Token == HIDDEN:
 			l.nextElement()
 		case token.Token == DIGIT:
+			tokens = append(tokens, token)
+		case token.Token == BOOL:
+			tokens = append(tokens, token)
+		case token.Token == NULL:
 			tokens = append(tokens, token)
 		default:
 			tokens = append(tokens, token)

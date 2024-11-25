@@ -28,13 +28,15 @@ func TestParser(t *testing.T) {
 		{fmt.Sprintf("%v/testdata/step2/valid3.json", cdir), true},
 		{fmt.Sprintf("%v/testdata/step2/invalid.json", cdir), false},
 		{fmt.Sprintf("%v/testdata/step2/invalid2.json", cdir), false},
+		{fmt.Sprintf("%v/testdata/step3/valid.json", cdir), true},
+		{fmt.Sprintf("%v/testdata/step3/invalid.json", cdir), false},
 	}
 
 	for _, testFile := range testFiles {
 
 		file, err := os.ReadFile(testFile.testFile)
 		if err != nil {
-			t.Errorf("Failed to read the test file")
+			t.Errorf("\nFailed to read the test file")
 		}
 
 		lex := lexer.Lexer{Runes: []rune(string(file)), Position: 0}

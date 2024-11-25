@@ -66,8 +66,15 @@ func (p *parser) parseObject() error {
 		}
 
 		token = p.getNextToken()
-		if token.Token != "STRING" {
-			return errors.New("JSON value must be a string")
+		// if token.Token != "STRING" {
+		// 	return errors.New("JSON value must be a string")
+		// }
+
+		switch token.Token {
+		case "STRING", "BOOL", "NULL", "DIGIT":
+			break
+		default:
+			return errors.New("Invalid value")
 		}
 
 		token = p.getNextToken()
