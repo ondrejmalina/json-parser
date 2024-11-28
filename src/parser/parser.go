@@ -65,10 +65,6 @@ func (p *parser) parseArray() error {
 		default:
 			return errors.New("Invalid token in JSON array")
 		}
-		//
-		// if token.Token != "STRING" {
-		// 	return errors.New("Array must contain strings")
-		// }
 
 		token = p.getNextToken()
 		if token.Token == "]" {
