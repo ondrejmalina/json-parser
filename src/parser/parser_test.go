@@ -8,6 +8,20 @@ import (
 	"github.com/ondrejmalina/json-parser/src/lexer"
 )
 
+func TestArrayParsing(t *testing.T) {
+	test_cases := []string{`[]`, `["Hello"]`, `[123]`, `[true]`, `[null]`}
+
+	for _, c := range test_cases {
+		lex := lexer.Lexer{Runes: []rune(c), Position: 0}
+		tok := lex.TokenizeString()
+		t.Log(tok)
+		p := CreateParser(tok)
+		if err := p.parseArray(); err != nil {
+			t.Errorf("Parsing of array failed")
+		}
+	}
+}
+
 func TestParser(t *testing.T) {
 
 	type testFile struct {

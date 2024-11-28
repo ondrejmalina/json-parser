@@ -46,6 +46,43 @@ func (p *parser) parseValue() error {
 	return err
 }
 
+func (p *parser) parseArray() error {
+
+	var err error
+	err = nil
+
+	if p.tokens[p.position+1].Token == "]" {
+		return nil
+	}
+
+	var token lexer.Token
+	for true {
+		token = p.getNextToken()
+
+		switch token.Token {
+		case "STRING", "BOOL", "NULL", "DIGIT":
+			break
+		default:
+			return errors.New("Invalid token in JSON array")
+		}
+		//
+		// if token.Token != "STRING" {
+		// 	return errors.New("Array must contain strings")
+		// }
+
+		token = p.getNextToken()
+		if token.Token == "]" {
+			return nil
+		}
+
+		token = p.getNextToken()
+		if token.Token != "," {
+			return errors.New("Missing comma in array")
+		}
+	}
+	return err
+}
+
 func (p *parser) parseObject() error {
 
 	// empty json files
@@ -66,13 +103,11 @@ func (p *parser) parseObject() error {
 		}
 
 		token = p.getNextToken()
-		// if token.Token != "STRING" {
-		// 	return errors.New("JSON value must be a string")
-		// }
-
 		switch token.Token {
 		case "STRING", "BOOL", "NULL", "DIGIT":
 			break
+		case "{":
+			p.parseObject()
 		default:
 			return errors.New("Invalid value")
 		}
