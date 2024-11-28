@@ -52,6 +52,7 @@ func (p *parser) parseArray() error {
 	err = nil
 
 	if p.tokens[p.position+1].Token == "]" {
+		p.getNextToken()
 		return nil
 	}
 
@@ -83,6 +84,7 @@ func (p *parser) parseObject() error {
 
 	// empty json files
 	if p.tokens[p.position+1].Token == "}" {
+		p.getNextToken()
 		return nil
 	}
 
@@ -104,6 +106,8 @@ func (p *parser) parseObject() error {
 			break
 		case "{":
 			p.parseObject()
+		case "[":
+			p.parseArray()
 		default:
 			return errors.New("Invalid value")
 		}
