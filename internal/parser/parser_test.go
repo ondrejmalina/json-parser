@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ondrejmalina/json-parser/src/lexer"
+	"github.com/ondrejmalina/json-parser/internal/lexer"
 )
 
 func TestArrayParsing(t *testing.T) {

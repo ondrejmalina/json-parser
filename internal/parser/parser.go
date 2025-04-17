@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ondrejmalina/json-parser/src/lexer"
+	"github.com/ondrejmalina/json-parser/internal/lexer"
 )
 
 func CreateParser(tokens []lexer.Token) parser {
