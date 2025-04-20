@@ -1,126 +1,53 @@
 package parser
 
 import (
-	"errors"
 	"fmt"
-	"os"
 
 	"github.com/ondrejmalina/json-parser/internal/lexer"
 )
 
-func CreateParser(tokens []lexer.Token) parser {
-	return parser{tokens: tokens, position: 0}
+func CreateParser(l lexer.Lexer) Parser {
+	return Parser{l}
 }
 
-type parser struct {
-	tokens   []lexer.Token
-	position int
+type Parser struct {
+	lexer lexer.Lexer
 }
 
-func (p *parser) getNextToken() lexer.Token {
-	p.position++
-	return p.tokens[p.position]
-}
-
-func (p *parser) ParseJson() {
+func (p *Parser) ParseJson() error {
 	err := p.parseValue()
 	if err != nil {
-		os.Exit(1)
+		return err
 	}
-	fmt.Println("Json file parsed successfully")
-	os.Exit(0)
+	return nil
 }
 
-func (p *parser) parseValue() error {
+func (p *Parser) parseValue() error {
 
-	var err error
-	err = nil
+	token := p.lexer.TokenizeRune()
 
-	switch p.tokens[p.position].Token {
-	case "EMPTY":
-		err = errors.New("Empty file is not valid JSON")
-	case "{":
-		err = p.parseObject()
+	switch token.TokenType {
+	case lexer.LEFT_CUR_BR:
+		return p.parseObject()
 	}
 
-	return err
+	return fmt.Errorf("JSON starts with invalid character '%c'", token.Character)
 }
 
-func (p *parser) parseArray() error {
+func (p *Parser) parseObject() error {
 
-	var err error
-	err = nil
-
-	if p.tokens[p.position+1].Token == "]" {
-		p.getNextToken()
-		return nil
-	}
-
-	var token lexer.Token
 	for true {
-		token = p.getNextToken()
+		p.lexer.NextElement()
+		token := p.lexer.TokenizeRune()
 
-		switch token.Token {
-		case "STRING", "BOOL", "NULL", "DIGIT":
-			break
-		default:
-			return errors.New("Invalid token in JSON array")
-		}
-
-		token = p.getNextToken()
-		if token.Token == "]" {
+		switch token.TokenType {
+		case lexer.RIGHT_CUR_BR:
 			return nil
-		}
-
-		token = p.getNextToken()
-		if token.Token != "," {
-			return errors.New("Missing comma in array")
-		}
-	}
-	return err
-}
-
-func (p *parser) parseObject() error {
-
-	// empty json files
-	if p.tokens[p.position+1].Token == "}" {
-		p.getNextToken()
-		return nil
-	}
-
-	var token lexer.Token
-	for true {
-		token = p.getNextToken()
-		if token.Token != "STRING" {
-			return errors.New("JSON key must be a string")
-		}
-
-		token = p.getNextToken()
-		if token.Token != ":" {
-			return errors.New("JSON key must be followed by a colon")
-		}
-
-		token = p.getNextToken()
-		switch token.Token {
-		case "STRING", "BOOL", "NULL", "DIGIT":
-			break
-		case "{":
-			p.parseObject()
-		case "[":
-			p.parseArray()
+		case lexer.EOF:
+			return fmt.Errorf("Reached EOF")
 		default:
-			return errors.New("Invalid value")
-		}
-
-		token = p.getNextToken()
-		if token.Token == "}" {
-			return nil
-		}
-
-		if token.Token != "," {
-			return errors.New("Missing comma")
+			return fmt.Errorf("Invalid value %c", token.Character)
 		}
 	}
-
-	return errors.New("JSON is not valid")
+	return nil
 }
