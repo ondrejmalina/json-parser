@@ -7,46 +7,62 @@ import (
 )
 
 func CreateParser(l lexer.Lexer) Parser {
-	return Parser{l}
+	token := l.TokenizeRune()
+	l.NextElement()
+	nToken := l.TokenizeRune()
+	return Parser{lexer: l, token: token, nextToken: nToken}
 }
 
 type Parser struct {
-	lexer lexer.Lexer
+	lexer     lexer.Lexer
+	token     lexer.Token
+	nextToken lexer.Token
 }
 
 func (p *Parser) ParseJson() error {
-	err := p.parseValue()
+	err := p.parseJson()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Parser) parseValue() error {
+func (p *Parser) getNextToken() {
+	p.token = p.nextToken
+	p.lexer.NextElement()
+	p.nextToken = p.lexer.TokenizeRune()
+}
 
-	token := p.lexer.TokenizeRune()
+func (p *Parser) parseJson() error {
 
-	switch token.TokenType {
-	case lexer.LEFT_CUR_BR:
-		return p.parseObject()
+	// check valid start of json
+	if p.token.TokenType != lexer.LEFT_CUR_BR {
+		return fmt.Errorf("JSON starts with invalid character '%c'", p.token.Character)
 	}
 
-	return fmt.Errorf("JSON starts with invalid character '%c'", token.Character)
+	// check valid json parsing
+	if err := p.parseObject(); err != nil {
+		return err
+	}
+
+	// check no characters after json closure
+	if p.nextToken.TokenType != lexer.EOF {
+		return fmt.Errorf("JSON has invalid closure '%c'", p.nextToken.Character)
+	}
+
+	return nil
 }
 
 func (p *Parser) parseObject() error {
 
 	for true {
-		p.lexer.NextElement()
-		token := p.lexer.TokenizeRune()
+		p.getNextToken()
 
-		switch token.TokenType {
+		switch p.token.TokenType {
 		case lexer.RIGHT_CUR_BR:
 			return nil
-		case lexer.EOF:
-			return fmt.Errorf("Reached EOF")
 		default:
-			return fmt.Errorf("Invalid value %c", token.Character)
+			return fmt.Errorf("Invalid value %c", p.token.Character)
 		}
 	}
 	return nil
