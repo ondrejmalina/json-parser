@@ -7,9 +7,9 @@ import (
 )
 
 func CreateParser(l lexer.Lexer) Parser {
-	token := l.TokenizeRune()
-	l.NextElement()
-	nToken := l.TokenizeRune()
+	token := l.GetToken()
+	l.NextToken()
+	nToken := l.GetToken()
 	return Parser{lexer: l, token: token, nextToken: nToken}
 }
 
@@ -29,8 +29,8 @@ func (p *Parser) ParseJson() error {
 
 func (p *Parser) getNextToken() {
 	p.token = p.nextToken
-	p.lexer.NextElement()
-	p.nextToken = p.lexer.TokenizeRune()
+	p.lexer.NextToken()
+	p.nextToken = p.lexer.GetToken()
 }
 
 func (p *Parser) parseJson() error {
