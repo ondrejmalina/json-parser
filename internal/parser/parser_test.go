@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/ondrejmalina/json-parser/internal/cli"
@@ -49,5 +50,9 @@ func TestParsing(t *testing.T) {
 		case err != nil && testFile.valid == true:
 			t.Errorf("Valid file %v parsed as invalid, \nerror: %v", testFile.testFile, err)
 		}
+
+		// output message
+		fileParent := strings.Split(testFile.testFile, "/")
+		t.Logf("File %v/%v parsed successfully", fileParent[len(fileParent)-2], fileParent[len(fileParent)-1])
 	}
 }

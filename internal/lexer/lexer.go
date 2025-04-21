@@ -1,6 +1,10 @@
 package lexer
 
-import "github.com/ondrejmalina/json-parser/internal/cli"
+import (
+	"unicode"
+
+	"github.com/ondrejmalina/json-parser/internal/cli"
+)
 
 type TokenType string
 
@@ -31,8 +35,19 @@ type Token struct {
 	Character rune
 }
 
+func removeSpaceRunes(runes []rune) []rune {
+	noSpaceRunes := make([]rune, 0, len(runes)) // NOTE: preallocates memory for efficiency
+	for _, r := range runes {
+		if !unicode.IsSpace(r) {
+			noSpaceRunes = append(noSpaceRunes, r)
+		}
+	}
+	return noSpaceRunes
+}
+
 func CreateLexer(inp cli.UserInput) *Lexer {
-	return &Lexer{runes: []rune(inp.Input)}
+	inpRunes := []rune(inp.Input)
+	return &Lexer{runes: removeSpaceRunes(inpRunes)}
 }
 
 func (l *Lexer) TokenizeRune() Token {
