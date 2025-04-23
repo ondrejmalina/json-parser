@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestMatchToken(t *testing.T) {
+func TestMatchStringToken(t *testing.T) {
 
 	testRunes := []rune("\"ab\"")
 	l := Lexer{runes: testRunes}

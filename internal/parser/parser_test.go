@@ -26,6 +26,12 @@ func TestParsing(t *testing.T) {
 		{fmt.Sprintf("%v/testdata/step1/valid.json", cdir), true},
 		{fmt.Sprintf("%v/testdata/step1/invalid.json", cdir), false},
 		{fmt.Sprintf("%v/testdata/step1/invalid2.json", cdir), false},
+		{fmt.Sprintf("%v/testdata/step2/valid.json", cdir), true},
+		{fmt.Sprintf("%v/testdata/step2/valid2.json", cdir), true},
+		{fmt.Sprintf("%v/testdata/step2/valid3.json", cdir), true},
+		{fmt.Sprintf("%v/testdata/step2/invalid.json", cdir), false},
+		{fmt.Sprintf("%v/testdata/step2/invalid2.json", cdir), false},
+		{fmt.Sprintf("%v/testdata/step3/valid.json", cdir), true},
 	}
 
 	for _, testFile := range testFiles {
@@ -47,13 +53,17 @@ func TestParsing(t *testing.T) {
 		// parsing validation
 		switch {
 		case err == nil && testFile.valid == false:
+			t.Errorf("Current token %v", p.token)
 			t.Errorf("Invalid file %v parsed as valid, \nerror: %v", testFile.testFile, err)
 		case err != nil && testFile.valid == true:
+			t.Errorf("Current token %v", p.token)
 			t.Errorf("Valid file %v parsed as invalid, \nerror: %v", testFile.testFile, err)
+		case err == nil && testFile.valid == true:
+			fileParent := strings.Split(testFile.testFile, "/")
+			t.Logf("File %v/%v parsed successfully", fileParent[len(fileParent)-2], fileParent[len(fileParent)-1])
+		case err != nil && testFile.valid == false:
+			fileParent := strings.Split(testFile.testFile, "/")
+			t.Logf("File %v/%v parsed successfully", fileParent[len(fileParent)-2], fileParent[len(fileParent)-1])
 		}
-
-		// output message
-		fileParent := strings.Split(testFile.testFile, "/")
-		t.Logf("File %v/%v parsed successfully", fileParent[len(fileParent)-2], fileParent[len(fileParent)-1])
 	}
 }

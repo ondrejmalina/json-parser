@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/ondrejmalina/json-parser/internal/lexer"
@@ -55,14 +56,41 @@ func (p *Parser) parseJson() error {
 
 func (p *Parser) parseObject() error {
 
-	for true {
-		p.getNextToken()
+	// End for empty objects
+	if p.nextToken.TokenType == lexer.RIGHT_CUR_BR {
+		p.getNextToken() // NOTE: For JSON closure check
+		return nil
+	}
 
+	for true {
+		// key
+		p.getNextToken()
+		if p.token.TokenType != lexer.STRING {
+			return fmt.Errorf("Key must be a string")
+		}
+
+		// comma
+		p.getNextToken()
+		if p.token.TokenType != lexer.COLON {
+			return fmt.Errorf("Missing colon")
+		}
+
+		// value
+		p.getNextToken()
 		switch p.token.TokenType {
-		case lexer.RIGHT_CUR_BR:
-			return nil
+		case lexer.STRING, lexer.DIGIT:
+			break
 		default:
-			return fmt.Errorf("Invalid value %c", p.token.Character)
+			return fmt.Errorf("Invalid JSON value")
+		}
+
+		// end of object / comma
+		p.getNextToken()
+		switch {
+		case p.token.TokenType == lexer.RIGHT_CUR_BR:
+			return nil
+		case p.token.TokenType != ",":
+			return errors.New("Missing comma")
 		}
 	}
 	return nil
