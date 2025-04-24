@@ -32,6 +32,7 @@ func TestParsing(t *testing.T) {
 		{fmt.Sprintf("%v/testdata/step2/invalid.json", cdir), false},
 		{fmt.Sprintf("%v/testdata/step2/invalid2.json", cdir), false},
 		{fmt.Sprintf("%v/testdata/step3/valid.json", cdir), true},
+		{fmt.Sprintf("%v/testdata/step3/invalid.json", cdir), false},
 	}
 
 	for _, testFile := range testFiles {
