@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"log"
 	"unicode"
 
 	"github.com/ondrejmalina/json-parser/internal/cli"
@@ -70,6 +71,8 @@ func (l *Lexer) GetToken() Token {
 		return l.parseString()
 	case unicode.IsDigit(r):
 		return l.parseDigit()
+	case r == 't' || r == 'f':
+		return l.parseBool()
 	}
 
 	return Token{INVALID, r}
@@ -107,4 +110,29 @@ func (l *Lexer) parseDigit() Token {
 	// TODO: Ugly, introduce something like next rune to handle better?
 	l.previousRune() // NOTE: ends on rune not being digit, therefore must shift back
 	return Token{DIGIT, 0}
+}
+
+func (l *Lexer) parseBool() Token {
+
+	positive := "true"
+	negative := "false"
+	parsedBool := ""
+
+	for ; l.position < len(l.runes); l.nextRune() {
+		if l.position == len(l.runes)-1 {
+			return Token{INVALID, 0}
+		}
+
+		if len(parsedBool) > len(negative) {
+			return Token{INVALID, 0}
+		}
+
+		parsedBool += string(l.runes[l.position])
+		log.Print(parsedBool)
+
+		if parsedBool == positive || parsedBool == negative {
+			break
+		}
+	}
+	return Token{BOOL, 0}
 }

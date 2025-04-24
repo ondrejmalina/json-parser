@@ -78,7 +78,7 @@ func (p *Parser) parseObject() error {
 		// value
 		p.getNextToken()
 		switch p.token.TokenType {
-		case lexer.STRING, lexer.DIGIT:
+		case lexer.STRING, lexer.DIGIT, lexer.BOOL:
 			break
 		default:
 			return fmt.Errorf("Invalid JSON value")

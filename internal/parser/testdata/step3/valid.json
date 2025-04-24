@@ -2,6 +2,7 @@
   "key1": 1,
   "key2": "a",
   "key3": 234,
-  "key4": "abc"
-
+  "key4": "abc",
+  "key5": true,
+  "key6": false
 }
