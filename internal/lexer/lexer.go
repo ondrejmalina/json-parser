@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"log"
 	"unicode"
 
 	"github.com/ondrejmalina/json-parser/internal/cli"
@@ -37,7 +36,7 @@ type Token struct {
 }
 
 func removeSpaceRunes(runes []rune) []rune {
-	noSpaceRunes := make([]rune, 0, len(runes)) // NOTE: preallocates memory for efficiency
+	noSpaceRunes := make([]rune, 0, len(runes))
 	for _, r := range runes {
 		if !unicode.IsSpace(r) {
 			noSpaceRunes = append(noSpaceRunes, r)
@@ -73,6 +72,8 @@ func (l *Lexer) GetToken() Token {
 		return l.parseDigit()
 	case r == 't' || r == 'f':
 		return l.parseBool()
+	case r == 'n':
+		return l.parseNull()
 	}
 
 	return Token{INVALID, r}
@@ -101,7 +102,7 @@ func (l *Lexer) parseString() Token {
 }
 
 func (l *Lexer) parseDigit() Token {
-	for ; l.position < len(l.runes) && unicode.IsDigit(l.runes[l.position]) == true; l.nextRune() {
+	for ; l.position < len(l.runes) && unicode.IsDigit(l.runes[l.position]); l.nextRune() {
 		if l.position == len(l.runes)-1 {
 			return Token{INVALID, 0}
 		}
@@ -128,11 +129,31 @@ func (l *Lexer) parseBool() Token {
 		}
 
 		parsedBool += string(l.runes[l.position])
-		log.Print(parsedBool)
-
 		if parsedBool == positive || parsedBool == negative {
 			break
 		}
 	}
 	return Token{BOOL, 0}
+}
+
+func (l *Lexer) parseNull() Token {
+
+	parsedNull := ""
+	strNull := "null"
+
+	for ; l.position < len(l.runes); l.nextRune() {
+		if l.position == len(l.runes)-1 {
+			return Token{INVALID, 0}
+		}
+
+		if len(parsedNull) > len(strNull) {
+			return Token{INVALID, 0}
+		}
+
+		parsedNull += string(l.runes[l.position])
+		if parsedNull == strNull {
+			break
+		}
+	}
+	return Token{NULL, 0}
 }

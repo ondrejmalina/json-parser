@@ -4,5 +4,6 @@
   "key3": 234,
   "key4": "abc",
   "key5": true,
-  "key6": false
+  "key6": null,
+  "key7": false
 }

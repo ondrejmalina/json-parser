@@ -78,13 +78,13 @@ func (p *Parser) parseObject() error {
 		// value
 		p.getNextToken()
 		switch p.token.TokenType {
-		case lexer.STRING, lexer.DIGIT, lexer.BOOL:
+		case lexer.STRING, lexer.DIGIT, lexer.BOOL, lexer.NULL:
 			break
 		default:
 			return fmt.Errorf("Invalid JSON value")
 		}
 
-		// end of object / comma
+		// end of object or comma
 		p.getNextToken()
 		switch {
 		case p.token.TokenType == lexer.RIGHT_CUR_BR:
