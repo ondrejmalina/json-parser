@@ -66,13 +66,13 @@ func (p *Parser) parseObject() error {
 		// key
 		p.getNextToken()
 		if p.token.TokenType != lexer.STRING {
-			return fmt.Errorf("Key must be a string")
+			return fmt.Errorf("JSON key must be a string")
 		}
 
-		// comma
+		// colon
 		p.getNextToken()
 		if p.token.TokenType != lexer.COLON {
-			return fmt.Errorf("Missing colon")
+			return fmt.Errorf("Missing colon after key")
 		}
 
 		// value
@@ -82,6 +82,8 @@ func (p *Parser) parseObject() error {
 			break
 		case lexer.LEFT_CUR_BR:
 			p.parseObject()
+		case lexer.LEFT_SQ_BR:
+			p.parseArray()
 		default:
 			return fmt.Errorf("Invalid JSON value")
 		}
@@ -90,6 +92,37 @@ func (p *Parser) parseObject() error {
 		p.getNextToken()
 		switch {
 		case p.token.TokenType == lexer.RIGHT_CUR_BR:
+			return nil
+		case p.token.TokenType != ",":
+			return errors.New("Missing comma")
+		}
+	}
+	return nil
+}
+
+func (p *Parser) parseArray() error {
+
+	// end for empty arrays
+	if p.nextToken.TokenType == lexer.RIGHT_SQ_BR {
+		p.getNextToken()
+		return nil
+	}
+
+	for true {
+
+		// Values
+		p.getNextToken()
+		switch p.token.TokenType {
+		case lexer.STRING, lexer.DIGIT, lexer.BOOL, lexer.NULL:
+			break
+		default:
+			return fmt.Errorf("Invalid array value")
+		}
+
+		// End of array or comma
+		p.getNextToken()
+		switch {
+		case p.token.TokenType == lexer.RIGHT_SQ_BR:
 			return nil
 		case p.token.TokenType != ",":
 			return errors.New("Missing comma")

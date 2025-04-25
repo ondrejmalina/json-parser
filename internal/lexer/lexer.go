@@ -62,6 +62,10 @@ func (l *Lexer) GetToken() Token {
 		return Token{LEFT_CUR_BR, r}
 	case r == '}':
 		return Token{RIGHT_CUR_BR, r}
+	case r == '[':
+		return Token{LEFT_SQ_BR, r}
+	case r == ']':
+		return Token{RIGHT_SQ_BR, r}
 	case r == ',':
 		return Token{COMMA, r}
 	case r == ':':
@@ -75,7 +79,6 @@ func (l *Lexer) GetToken() Token {
 	case r == 'n':
 		return l.parseNull()
 	}
-
 	return Token{INVALID, r}
 }
 
