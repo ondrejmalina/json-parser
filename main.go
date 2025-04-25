@@ -1,20 +1,16 @@
 package main
 
 import (
-	"flag"
+	"fmt"
+	"os"
 
-	"github.com/ondrejmalina/json-parser/src/file"
-	"github.com/ondrejmalina/json-parser/src/lexer"
-	"github.com/ondrejmalina/json-parser/src/parser"
+	"github.com/ondrejmalina/json-parser/internal/cmd"
 )
 
 func main() {
-	flag.Parse()
-
-	file := file.Read()
-	lexer := lexer.Lexer{Runes: file, Position: 0}
-	tokens := lexer.TokenizeString()
-
-	p := parser.CreateParser(tokens)
-	p.ParseJson()
+	if err := cmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println("JSON parsed successfully")
 }
