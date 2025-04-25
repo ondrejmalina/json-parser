@@ -80,6 +80,8 @@ func (p *Parser) parseObject() error {
 		switch p.token.TokenType {
 		case lexer.STRING, lexer.DIGIT, lexer.BOOL, lexer.NULL:
 			break
+		case lexer.LEFT_CUR_BR:
+			p.parseObject()
 		default:
 			return fmt.Errorf("Invalid JSON value")
 		}
