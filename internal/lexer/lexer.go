@@ -14,7 +14,6 @@ const (
 	INVALID                = "INVALID"
 	STRING                 = "STRING"
 	DIGIT                  = "DIGIT"
-	HIDDEN                 = "HIDDEN"
 	NULL                   = "NULL"
 	BOOL                   = "BOOL"
 	LEFT_CUR_BR            = "{"
@@ -53,10 +52,16 @@ func CreateLexer(inp cli.UserInput) *Lexer {
 func (l *Lexer) GetToken() Token {
 
 	if l.position >= len(l.runes) {
-		return Token{EOF, 0} // 0 is nil in unicode
+		return Token{EOF, 0}
 	}
 
 	r := l.runes[l.position]
+
+	// NOTE: skip whitespaces
+	for l.position < len(l.runes) && unicode.IsSpace(r) {
+		l.position++
+	}
+
 	switch {
 	case r == '{':
 		return Token{LEFT_CUR_BR, r}
@@ -111,7 +116,6 @@ func (l *Lexer) parseDigit() Token {
 		}
 	}
 
-	// TODO: Ugly, introduce something like next rune to handle better?
 	l.previousRune() // NOTE: ends on rune not being digit, therefore must shift back
 	return Token{DIGIT, 0}
 }
