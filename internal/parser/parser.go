@@ -78,7 +78,7 @@ func (p *Parser) parseObject() error {
 		// value
 		p.getNextToken()
 		switch p.token.TokenType {
-		case lexer.STRING, lexer.DIGIT, lexer.BOOL, lexer.NULL:
+		case lexer.STRING, lexer.NUMBER, lexer.BOOL, lexer.NULL:
 			break
 		case lexer.LEFT_CUR_BR:
 			p.parseObject()
@@ -113,7 +113,7 @@ func (p *Parser) parseArray() error {
 		// Values
 		p.getNextToken()
 		switch p.token.TokenType {
-		case lexer.STRING, lexer.DIGIT, lexer.BOOL, lexer.NULL:
+		case lexer.STRING, lexer.NUMBER, lexer.BOOL, lexer.NULL:
 			break
 		default:
 			return fmt.Errorf("Invalid array value")
