@@ -13,7 +13,7 @@ const (
 	EMPTY                  = "EMPTY"
 	INVALID                = "INVALID"
 	STRING                 = "STRING"
-	DIGIT                  = "DIGIT"
+	NUMBER                 = "NUMBER"
 	NULL                   = "NULL"
 	BOOL                   = "BOOL"
 	LEFT_CUR_BR            = "{"
@@ -79,6 +79,8 @@ func (l *Lexer) GetToken() Token {
 		return l.parseString()
 	case unicode.IsDigit(r):
 		return l.parseDigit()
+	case r == '-':
+		return l.parseDigit()
 	case r == 't' || r == 'f':
 		return l.parseBool()
 	case r == 'n':
@@ -110,14 +112,63 @@ func (l *Lexer) parseString() Token {
 }
 
 func (l *Lexer) parseDigit() Token {
-	for ; l.position < len(l.runes) && unicode.IsDigit(l.runes[l.position]); l.nextRune() {
-		if l.position == len(l.runes)-1 {
+
+	digitFound := false
+
+	// Optional leading minus
+	if l.runes[l.position] == '-' {
+		l.nextRune()
+		if !unicode.IsDigit(l.runes[l.position]) {
+			// Minus must be followed by at least one digit
 			return Token{INVALID, 0}
+		}
+		for unicode.IsDigit(l.runes[l.position]) {
+			digitFound = true
+			l.nextRune()
 		}
 	}
 
-	l.previousRune() // NOTE: ends on rune not being digit, therefore must shift back
-	return Token{DIGIT, 0}
+	// Integer part
+	for unicode.IsDigit(l.runes[l.position]) {
+		digitFound = true
+		l.nextRune()
+	}
+
+	// Fractional part
+	if l.runes[l.position] == '.' {
+		l.nextRune()
+		if !unicode.IsDigit(l.runes[l.position]) {
+			// A dot must be followed by at least one digit
+			return Token{INVALID, 0}
+		}
+		for unicode.IsDigit(l.runes[l.position]) {
+			digitFound = true
+			l.nextRune()
+		}
+	}
+
+	// Exponent part
+	if r := l.runes[l.position]; r == 'e' || r == 'E' {
+		l.nextRune()
+		if r := l.runes[l.position]; r == '+' || r == '-' {
+			l.nextRune()
+		}
+		if !unicode.IsDigit(l.runes[l.position]) {
+			// Exponent must have at least one digit
+			return Token{INVALID, 0}
+		}
+		for unicode.IsDigit(l.runes[l.position]) {
+			digitFound = true
+			l.nextRune()
+		}
+	}
+
+	if !digitFound {
+		return Token{INVALID, 0}
+	}
+
+	l.previousRune()
+	return Token{NUMBER, 0}
 }
 
 func (l *Lexer) parseBool() Token {

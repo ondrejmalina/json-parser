@@ -1,7 +1,7 @@
 {
-  "key1": true,
-  "key2": False,
-  "key3": null,
-  "key4": "value",
-  "key5": 101
+  "key": true,
+  "key": False,
+  "key": null,
+  "key": "value",
+  "key": 101
 }
