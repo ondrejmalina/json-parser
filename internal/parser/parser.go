@@ -66,7 +66,7 @@ func (p *Parser) parseObject() error {
 		// key
 		p.getNextToken()
 		if p.token.TokenType != lexer.STRING {
-			return fmt.Errorf("JSON key must be a string")
+			return fmt.Errorf("Invalid or missing JSON key")
 		}
 
 		// colon
@@ -94,7 +94,7 @@ func (p *Parser) parseObject() error {
 		case p.token.TokenType == lexer.RIGHT_CUR_BR:
 			return nil
 		case p.token.TokenType != ",":
-			return errors.New("Missing comma")
+			return errors.New("Invalid value or missing comma")
 		}
 	}
 	return nil
