@@ -1,5 +1,5 @@
 # JSON Parser
-A simple JSON parser. It is inspired by coding [challenges](https://codingchallenges.fyi/challenges/challenge-json-parser).
+A basic JSON parser. It is inspired by coding [challenges](https://codingchallenges.fyi/challenges/challenge-json-parser).
 
 <img title="json-parser" alt="json-parser" src="json_parser.png">
 
